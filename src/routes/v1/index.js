@@ -4,6 +4,7 @@ const userRoute = require('./user.route');
 const docsRoute = require('./docs.route');
 const batchRoute = require('./batch.route');
 const subjectRoute = require('./subject.route');
+const labRoute = require('./lab.route');
 const config = require('../../config/config');
 const gradeRoute = require('./grade.route');
 
@@ -25,6 +26,10 @@ const defaultRoutes = [
   {
     path: '/subject',
     route: subjectRoute,
+  },
+  {
+    path: '/lab',
+    route: labRoute,
   },
   {
     path: '/grade',

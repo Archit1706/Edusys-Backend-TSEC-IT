@@ -12,6 +12,10 @@ const gradeSchema = mongoose.Schema({
     ref: 'Subject',
     required: true,
   },
+  lab: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'Lab',
+  },
   teacher: {
     type: mongoose.SchemaTypes.ObjectId,
     ref: 'User',

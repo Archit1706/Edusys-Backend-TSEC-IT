@@ -2,8 +2,8 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { gradeService, subjectService, userService } = require('../services');
-const { calculate } = require('../utils/gradeCalculator');
+const { gradeService, subjectService, labService, userService } = require('../services');
+const { calculate, calculateLab } = require('../utils/gradeCalculator');
 const { Grade } = require('../models');
 
 const calculateGrades = catchAsync(async (req, res) => {
@@ -16,7 +16,11 @@ const calculateGrades = catchAsync(async (req, res) => {
   }
   const options = pick(req.body, ['uni', 'pt', 'indirect']);
   console.log(options);
-  const output = calculate(subject.attainment, options);
+
+  // here the output should be calculated based on the type of subject being theory or lab
+  const output = subject.type == 'Theory' ? calculate(subject.attainment, options) : calculateLab(subject.attainment, options);
+  
+  // const output = calculate(subject.attainment, options);
   const grade = {
     batch: batchId,
     subject: subjectId,
@@ -71,10 +75,26 @@ const assignSubject = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(grade);
 });
 
+const assignLab = catchAsync(async (req, res) => {
+  const x = await Grade.find({ subject: req.body.subject, batch: req.body.batch });
+  if (x.length > 0) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Subject And Batch already assigned');
+  }
+  const teacher = await userService.getUserById(req.body.teacher);
+  const subject = await labService.getLabById(req.body.subject);
+  if (teacher && subject && !teacher.subjects.includes(subject.subjectCode)) {
+    teacher.labs.push(subject.subjectCode);
+    await teacher.save();
+  }
+  const grade = await gradeService.createOrUpdateGrade(req.body);
+  res.status(httpStatus.CREATED).send(grade);
+});
+
 module.exports = {
   calculateGrades,
   getGrades,
   getGrade,
   deleteGrade,
   assignSubject,
+  assignLab,
 };

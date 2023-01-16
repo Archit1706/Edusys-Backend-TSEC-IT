@@ -11,5 +11,6 @@ router.route('/calculate').post(gradeController.calculateGrades);
 router.route('/:gradeId').get(gradeController.getGrade).delete(auth('manageBatches'), gradeController.deleteGrade);
 
 router.route('/assign').post(gradeController.assignSubject);
+router.route('/assignLab').post(gradeController.assignLab);
 
 module.exports = router;

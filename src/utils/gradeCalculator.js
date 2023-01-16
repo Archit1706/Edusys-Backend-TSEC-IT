@@ -28,6 +28,17 @@ const calculate80and20 = (f, s) => {
   return res;
 };
 
+const calculate50and50 = (f, s) => {
+  const res = [];
+  for (let i = 0; i < f.length; i++) {
+    res.push({
+      title: f[i].title,
+      value: f[i].value * 0.5 + s[i].value * 0.5,
+    });
+  }
+  return res;
+};
+
 const combineAll = (uni, pt, indirect, direct, final) => {
   const res = [];
   for (let i = 0; i < uni.length; i++) {
@@ -54,6 +65,18 @@ const calculate = (att, input) => {
   return combineAll(uni, pt, indirect, direct, final);
 };
 
+const calculateLab = (att, input) => {
+  const cos = att.length;
+  const pos = att[0].data.length;
+  const uni = calculatePos(att, cos, pos, input.uni); // oral
+  const pt = calculatePos(att, cos, pos, input.pt);  // practical
+  const indirect = calculatePos(att, cos, pos, input.indirect); // googe forms
+  const direct = calculate50and50(uni, pt);  // 50% of oral and practical
+  const final = calculate80and20(direct, indirect); //80% of direct and 20% of indirect
+  return combineAll(uni, pt, indirect, direct, final);
+};
+
 module.exports = {
   calculate,
+  calculateLab,
 };
