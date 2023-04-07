@@ -18,8 +18,9 @@ const calculateGrades = catchAsync(async (req, res) => {
   console.log(options);
 
   // here the output should be calculated based on the type of subject being theory or lab
-  const output = subject.type == 'Theory' ? calculate(subject.attainment, options) : calculateLab(subject.attainment, options);
-  
+  const output =
+    subject.type == 'Theory' ? calculate(subject.attainment, options) : calculateLab(subject.attainment, options);
+
   // const output = calculate(subject.attainment, options);
   const grade = {
     batch: batchId,
@@ -39,12 +40,38 @@ const calculateGrades = catchAsync(async (req, res) => {
 });
 
 const getGrades = catchAsync(async (req, res) => {
+  const type = req.query.type ?? 'Theory';
+  req.query.type = type;
+  console.log(type);
   const filter = pick(req.query, ['batch', 'subject', 'teacher', 'status']);
+  console.log(filter);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   options.populate = 'batch, subject, teacher';
   // options.select = '-output';
   const result = await gradeService.queryGrades(filter, options);
-  res.send(result);
+  const grades = [];
+  result.results.forEach((grade) => {
+    if (grade.subject.type == type) {
+      grades.push(grade);
+    }
+  });
+
+  console.log(type + ' ' + grades.length.toString());
+  res.send(grades);
+});
+
+const getAllGrades = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['batch', 'subject', 'teacher', 'status']);
+  console.log(filter);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  options.populate = 'batch, subject, teacher';
+  // options.select = '-output';
+  const result = await gradeService.queryGrades(filter, options);
+  const grades = [];
+  result.results.forEach((grade) => {
+    grades.push(grade);
+  });
+  res.send(grades);
 });
 
 const getGrade = catchAsync(async (req, res) => {
@@ -97,4 +124,5 @@ module.exports = {
   deleteGrade,
   assignSubject,
   assignLab,
+  getAllGrades,
 };

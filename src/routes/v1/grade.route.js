@@ -5,6 +5,7 @@ const gradeController = require('../../controllers/grade.controller');
 const router = express.Router();
 
 router.route('/').get(gradeController.getGrades);
+router.route('/all').get(gradeController.getAllGrades);
 
 router.route('/calculate').post(gradeController.calculateGrades);
 

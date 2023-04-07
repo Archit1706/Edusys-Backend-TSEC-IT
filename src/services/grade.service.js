@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Grade } = require('../models');
+const { Grade, Lab } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 const createOrUpdateGrade = async (userBody) => {
@@ -11,6 +11,11 @@ const createOrUpdateGrade = async (userBody) => {
 
 const queryGrades = async (filter, options) => {
   const res = await Grade.paginate(filter, options);
+  return res;
+};
+
+const queryLabGrades = async (filter, options) => {
+  const res = await Lab.paginate(filter, options);
   return res;
 };
 
@@ -43,4 +48,5 @@ module.exports = {
   getGradeById,
   updateGradeById,
   deleteGradeById,
+  queryLabGrades,
 };

@@ -10,12 +10,14 @@ const createSubject = catchAsync(async (req, res) => {
 });
 
 const getSubjects = catchAsync(async (req, res) => {
+  const type = req.query.type ?? 'Theory';
   const filter = pick(req.query, ['semester', 'year']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   options.select = '-attainment';
   options.limit = 100;
   const result = await subjectService.querySubjects(filter, options);
-  res.send(result);
+  const x = result.results.filter((subject) => subject.type === type);
+  res.send(x);
 });
 
 const getSubject = catchAsync(async (req, res) => {
